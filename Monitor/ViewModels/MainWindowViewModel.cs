@@ -5,12 +5,9 @@ using OpenCvSharp;
 using Prism.Mvvm;
 using Reactive.Bindings;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace Monitor.ViewModels
@@ -79,11 +76,12 @@ namespace Monitor.ViewModels
                     vc.Dispose();
                 }
                 Eizou.Value = resolution;
-                dispatcherTimer.Interval = TimeSpan.FromTicks(1);
+                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(16.7);
                 dispatcherTimer.Tick += DispatcherTimer_Tick;
                 Environment.SetEnvironmentVariable("OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS", "0");
                 vc = new VideoCapture(Eizou.Value.CameraNumber, VideoCaptureAPIs.MSMF);
-                vc.Set(OpenCvSharp.VideoCaptureProperties.FourCC, OpenCvSharp.VideoWriter.FourCC("MJPG"));
+                vc.Set(OpenCvSharp.VideoCaptureProperties.FourCC, OpenCvSharp.VideoWriter.FourCC("HEVC"));
+                vc.Set(OpenCvSharp.VideoCaptureProperties.Fps, 60);
                 vc.Set(VideoCaptureProperties.FrameWidth, Eizou.Value.Width);
                 vc.Set(VideoCaptureProperties.FrameHeight, Eizou.Value.Height);
                 dispatcherTimer.Start();
@@ -185,15 +183,14 @@ namespace Monitor.ViewModels
 
         private void DispatcherTimer_Tick(object? sender, EventArgs e)
         {
-            if (Image.Value is not null)
-            {
-                var disposing = Image.Value;
-                Task.Factory.StartNew(() =>
-                {
-                    disposing.Dispose();
-                });
-            }
-            Image.Value = vc.RetrieveMat();
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var mat = new Mat();
+            vc.Grab();
+            vc.Retrieve(mat);
+            Image.Value = mat;
+            stopwatch.Stop();
+            Cv2.WaitKey((int)(17 - stopwatch.ElapsedMilliseconds));
         }
     }
 }
