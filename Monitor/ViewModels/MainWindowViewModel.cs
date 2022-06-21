@@ -1,4 +1,5 @@
 ﻿using libcamenmCore;
+using Monitor.Utils;
 using NAudio.Wave;
 using OpenCvSharp;
 using Prism.Mvvm;
@@ -21,6 +22,10 @@ namespace Monitor.ViewModels
         public ReactiveCommand<Resolution> SetEizouCommand { get; }
         public ReactiveCommand<WaveInCapabilities> SetWaveInCommand { get; }
         public ReactiveCommand<WaveOutCapabilities> SetWaveOutCommand { get; }
+
+        public ReactiveCommand SetThreadExecutionStateCommand { get; }
+
+        public ReactivePropertySlim<bool> IsDisabledScreenSaver { get; } = new ReactivePropertySlim<bool>();
 
         public ReactivePropertySlim<Resolution> Eizou { get; } = new ReactivePropertySlim<Resolution>();
 
@@ -119,6 +124,18 @@ namespace Monitor.ViewModels
                         waveIn.StartRecording();
                         waveOut.Play();
                     }
+                }
+            });
+            SetThreadExecutionStateCommand = new ReactiveCommand().WithSubscribe(() =>
+            {
+                IsDisabledScreenSaver.Value = !IsDisabledScreenSaver.Value;
+                if (IsDisabledScreenSaver.Value)
+                {
+                    NativeMethods.SetThreadExecutionState(NativeMethods.EXECUTION_STATE.ES_AWAYMODE_REQUIRED | NativeMethods.EXECUTION_STATE.ES_CONTINUOUS);
+                }
+                else
+                {
+                    NativeMethods.SetThreadExecutionState(NativeMethods.EXECUTION_STATE.ES_CONTINUOUS);
                 }
             });
 

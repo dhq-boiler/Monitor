@@ -16,6 +16,12 @@
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
+            <MenuItem Header="ファイル(_F)">
+                <MenuItem
+                    Command="{Binding SetThreadExecutionStateCommand}"
+                    Header="スクリーンセーバーOFF"
+                    IsChecked="{Binding IsDisabledScreenSaver.Value}" />
+            </MenuItem>
             <MenuItem Header="映像(_E)" ItemsSource="{Binding Eizous}">
                 <MenuItem.ItemContainerStyle>
                     <Style TargetType="MenuItem">
