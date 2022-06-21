@@ -34,8 +34,12 @@ namespace Monitor.ViewModels
 
         public ReactivePropertySlim<WaveInCapabilities> WaveInCapability { get; } = new ReactivePropertySlim<WaveInCapabilities>();
         public ReactivePropertySlim<WaveOutCapabilities> WaveOutCapability { get; } = new ReactivePropertySlim<WaveOutCapabilities>();
+ 
+        public ReactivePropertySlim<double> CPURate { get; } = new ReactivePropertySlim<double>();
 
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
+ 
+        private DispatcherTimer dispatcherTimer2 = new DispatcherTimer();
 
         private VideoCapture vc;
 
@@ -47,6 +51,8 @@ namespace Monitor.ViewModels
         private WaveIn waveIn = new WaveIn();
 
         private WaveOut waveOut = new WaveOut();
+ 
+        private PerformanceCounter CPUUsage = new PerformanceCounter();
 
 
         public MainWindowViewModel()
@@ -181,7 +187,21 @@ namespace Monitor.ViewModels
             bufferedWaveProvider.DiscardOnBufferOverflow = true;
             waveOut.Init(bufferedWaveProvider);
             waveIn.StartRecording();
-            waveOut.Play();
+            waveOut.Play(); 
+            
+            CPUUsage.CategoryName = "Process";
+            CPUUsage.CounterName = "% Processor Time";
+            CPUUsage.InstanceName = Process.GetCurrentProcess().ProcessName;
+            CPUUsage.ReadOnly = true;
+            
+            dispatcherTimer2.Interval = TimeSpan.FromSeconds(1);
+            dispatcherTimer2.Tick += DispatcherTimer2_Tick;
+            dispatcherTimer2.Start();
+        }
+
+        private void DispatcherTimer2_Tick(object? sender, EventArgs e)
+        {
+            CPURate.Value = CPUUsage.NextValue() / Environment.ProcessorCount;
         }
 
         private void WaveIn_DataAvailable(object? sender, WaveInEventArgs e)

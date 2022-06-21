@@ -101,6 +101,17 @@
                 </MenuItem.ItemContainerStyle>
             </MenuItem>
         </Menu>
+        <StatusBar HorizontalAlignment="Right" DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <StatusBarItem.Content>
+                    <TextBlock>
+                        <Run Text="CPU使用率：" />
+                        <Run Text="{Binding CPURate.Value, StringFormat={}{0:N1}}" />
+                        <Run Text="%" />
+                    </TextBlock>
+                </StatusBarItem.Content>
+            </StatusBarItem>
+        </StatusBar>
         <Image Source="{Binding Image.Value, Converter={StaticResource Mat2Image}}" />
     </DockPanel>
 </Window>
