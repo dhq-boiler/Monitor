@@ -69,10 +69,21 @@ namespace Monitor.ViewModels
             }
             SetEizouCommand = new ReactiveCommand<Resolution>().WithSubscribe((resolution) =>
             {
+                if (dispatcherTimer is not null)
+                {
+                    dispatcherTimer.Stop();
+                    dispatcherTimer.Tick -= DispatcherTimer_Tick;
+                }
+                if (vc is not null)
+                {
+                    vc.Dispose();
+                }
                 Eizou.Value = resolution;
                 dispatcherTimer.Interval = TimeSpan.FromTicks(1);
                 dispatcherTimer.Tick += DispatcherTimer_Tick;
-                vc = new VideoCapture(Eizou.Value.CameraNumber);
+                Environment.SetEnvironmentVariable("OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS", "0");
+                vc = new VideoCapture(Eizou.Value.CameraNumber, VideoCaptureAPIs.MSMF);
+                vc.Set(OpenCvSharp.VideoCaptureProperties.FourCC, OpenCvSharp.VideoWriter.FourCC("MJPG"));
                 vc.Set(VideoCaptureProperties.FrameWidth, Eizou.Value.Width);
                 vc.Set(VideoCaptureProperties.FrameHeight, Eizou.Value.Height);
                 dispatcherTimer.Start();
@@ -136,7 +147,7 @@ namespace Monitor.ViewModels
                 IsDisabledScreenSaver.Value = !IsDisabledScreenSaver.Value;
                 if (IsDisabledScreenSaver.Value)
                 {
-                    NativeMethods.SetThreadExecutionState(NativeMethods.EXECUTION_STATE.ES_AWAYMODE_REQUIRED | NativeMethods.EXECUTION_STATE.ES_CONTINUOUS);
+                    NativeMethods.SetThreadExecutionState(NativeMethods.EXECUTION_STATE.ES_DISPLAY_REQUIRED | NativeMethods.EXECUTION_STATE.ES_CONTINUOUS);
                 }
                 else
                 {
