@@ -36,6 +36,7 @@ namespace Monitor.ViewModels
         public ReactiveCollection<WaveOutCapabilities> WaveOutCapabilities { get; } = new ReactiveCollection<WaveOutCapabilities>();
 
         public ReactivePropertySlim<WaveInCapabilities> WaveInCapability { get; } = new ReactivePropertySlim<WaveInCapabilities>();
+        public ReactivePropertySlim<WaveOutCapabilities> WaveOutCapability { get; } = new ReactivePropertySlim<WaveOutCapabilities>();
 
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
 
@@ -105,6 +106,7 @@ namespace Monitor.ViewModels
             });
             SetWaveOutCommand = new ReactiveCommand<WaveOutCapabilities>().WithSubscribe((waveOutCaps) =>
             {
+                WaveOutCapability.Value = waveOutCaps;
                 int waveOutDevices = WaveOut.DeviceCount;
                 for (int waveOutDevice = 0; waveOutDevice < waveOutDevices; waveOutDevice++)
                 {

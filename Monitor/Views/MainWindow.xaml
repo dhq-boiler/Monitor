@@ -15,6 +15,7 @@
         <converters:MatToImage x:Key="Mat2Image" />
         <converters:ResolutionToBool x:Key="Resolution2Bool" />
         <converters:WaveInCapabilitiesToBool x:Key="WaveIn2Bool" />
+        <converters:WaveOutCapabilitiesToBool x:Key="WaveOut2Bool" />
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -88,6 +89,14 @@
                         </Setter>
                         <Setter Property="Command" Value="{Binding Path=DataContext.SetWaveOutCommand, ElementName=mainWindow}" />
                         <Setter Property="CommandParameter" Value="{Binding}" />
+                        <Setter Property="IsChecked">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource WaveOut2Bool}" Mode="OneWay">
+                                    <Binding />
+                                    <Binding ElementName="mainWindow" Path="DataContext.WaveOutCapability.Value" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </MenuItem.ItemContainerStyle>
             </MenuItem>
