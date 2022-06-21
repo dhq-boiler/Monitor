@@ -13,6 +13,7 @@
     mc:Ignorable="d">
     <Window.Resources>
         <converters:MatToImage x:Key="Mat2Image" />
+        <converters:ResolutionToBool x:Key="Resolution2Bool" />
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -28,6 +29,14 @@
                         <Setter Property="Header" Value="{Binding}" />
                         <Setter Property="Command" Value="{Binding Path=DataContext.SetEizouCommand, ElementName=mainWindow}" />
                         <Setter Property="CommandParameter" Value="{Binding}" />
+                        <Setter Property="IsChecked">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource Resolution2Bool}" Mode="OneWay">
+                                    <Binding />
+                                    <Binding ElementName="mainWindow" Path="DataContext.Eizou.Value" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </MenuItem.ItemContainerStyle>
             </MenuItem>
