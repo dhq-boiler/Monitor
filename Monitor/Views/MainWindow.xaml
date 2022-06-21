@@ -13,15 +13,32 @@
     mc:Ignorable="d">
     <Window.Resources>
         <converters:MatToImage x:Key="Mat2Image" />
+        <converters:ResolutionToBool x:Key="Resolution2Bool" />
+        <converters:WaveInCapabilitiesToBool x:Key="WaveIn2Bool" />
+        <converters:WaveOutCapabilitiesToBool x:Key="WaveOut2Bool" />
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
+            <MenuItem Header="ファイル(_F)">
+                <MenuItem
+                    Command="{Binding SetThreadExecutionStateCommand}"
+                    Header="スクリーンセーバーOFF"
+                    IsChecked="{Binding IsDisabledScreenSaver.Value}" />
+            </MenuItem>
             <MenuItem Header="映像(_E)" ItemsSource="{Binding Eizous}">
                 <MenuItem.ItemContainerStyle>
                     <Style TargetType="MenuItem">
                         <Setter Property="Header" Value="{Binding}" />
                         <Setter Property="Command" Value="{Binding Path=DataContext.SetEizouCommand, ElementName=mainWindow}" />
                         <Setter Property="CommandParameter" Value="{Binding}" />
+                        <Setter Property="IsChecked">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource Resolution2Bool}" Mode="OneWay">
+                                    <Binding />
+                                    <Binding ElementName="mainWindow" Path="DataContext.Eizou.Value" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </MenuItem.ItemContainerStyle>
             </MenuItem>
@@ -43,6 +60,14 @@
                         </Setter>
                         <Setter Property="Command" Value="{Binding Path=DataContext.SetWaveInCommand, ElementName=mainWindow}" />
                         <Setter Property="CommandParameter" Value="{Binding}" />
+                        <Setter Property="IsChecked">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource WaveIn2Bool}" Mode="OneWay">
+                                    <Binding />
+                                    <Binding ElementName="mainWindow" Path="DataContext.WaveInCapability.Value" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </MenuItem.ItemContainerStyle>
             </MenuItem>
@@ -64,10 +89,29 @@
                         </Setter>
                         <Setter Property="Command" Value="{Binding Path=DataContext.SetWaveOutCommand, ElementName=mainWindow}" />
                         <Setter Property="CommandParameter" Value="{Binding}" />
+                        <Setter Property="IsChecked">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource WaveOut2Bool}" Mode="OneWay">
+                                    <Binding />
+                                    <Binding ElementName="mainWindow" Path="DataContext.WaveOutCapability.Value" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </MenuItem.ItemContainerStyle>
             </MenuItem>
         </Menu>
+        <StatusBar HorizontalAlignment="Right" DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <StatusBarItem.Content>
+                    <TextBlock>
+                        <Run Text="CPU使用率：" />
+                        <Run Text="{Binding CPURate.Value, StringFormat={}{0:N1}}" />
+                        <Run Text="%" />
+                    </TextBlock>
+                </StatusBarItem.Content>
+            </StatusBarItem>
+        </StatusBar>
         <Image Source="{Binding Image.Value, Converter={StaticResource Mat2Image}}" />
     </DockPanel>
 </Window>
