@@ -158,6 +158,10 @@ namespace Monitor.ViewModels
             {
                 WaveInCapabilities deviceInfo = WaveIn.GetCapabilities(waveInDevice);
                 WaveInCapabilities.Add(deviceInfo);
+                if (waveInDevice == 0)
+                {
+                    WaveInCapability.Value = deviceInfo;
+                }
             }
 
             int waveOutDevices = WaveOut.DeviceCount;
@@ -165,6 +169,10 @@ namespace Monitor.ViewModels
             {
                 WaveOutCapabilities deviceInfo = WaveOut.GetCapabilities(waveOutDevice);
                 WaveOutCapabilities.Add(deviceInfo);
+                if (waveOutDevice == 0)
+                {
+                    WaveOutCapability.Value = deviceInfo;
+                }
             }
 
             waveIn.DataAvailable += WaveIn_DataAvailable;
