@@ -14,6 +14,7 @@
     <Window.Resources>
         <converters:MatToImage x:Key="Mat2Image" />
         <converters:ResolutionToBool x:Key="Resolution2Bool" />
+        <converters:WaveInCapabilitiesToBool x:Key="WaveIn2Bool" />
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -58,6 +59,14 @@
                         </Setter>
                         <Setter Property="Command" Value="{Binding Path=DataContext.SetWaveInCommand, ElementName=mainWindow}" />
                         <Setter Property="CommandParameter" Value="{Binding}" />
+                        <Setter Property="IsChecked">
+                            <Setter.Value>
+                                <MultiBinding Converter="{StaticResource WaveIn2Bool}" Mode="OneWay">
+                                    <Binding />
+                                    <Binding ElementName="mainWindow" Path="DataContext.WaveInCapability.Value" />
+                                </MultiBinding>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </MenuItem.ItemContainerStyle>
             </MenuItem>

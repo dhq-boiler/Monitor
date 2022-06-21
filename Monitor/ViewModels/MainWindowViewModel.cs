@@ -35,6 +35,8 @@ namespace Monitor.ViewModels
 
         public ReactiveCollection<WaveOutCapabilities> WaveOutCapabilities { get; } = new ReactiveCollection<WaveOutCapabilities>();
 
+        public ReactivePropertySlim<WaveInCapabilities> WaveInCapability { get; } = new ReactivePropertySlim<WaveInCapabilities>();
+
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
 
         private VideoCapture vc;
@@ -76,6 +78,7 @@ namespace Monitor.ViewModels
             });
             SetWaveInCommand = new ReactiveCommand<WaveInCapabilities>().WithSubscribe((waveInCaps) =>
             {
+                WaveInCapability.Value = waveInCaps;
                 int waveInDevices = WaveIn.DeviceCount;
                 for (int waveInDevice = 0; waveInDevice < waveInDevices; waveInDevice++)
                 {
