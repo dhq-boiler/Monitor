@@ -34,8 +34,9 @@ namespace Monitor.ViewModels
 
         public ReactivePropertySlim<WaveInCapabilities> WaveInCapability { get; } = new ReactivePropertySlim<WaveInCapabilities>();
         public ReactivePropertySlim<WaveOutCapabilities> WaveOutCapability { get; } = new ReactivePropertySlim<WaveOutCapabilities>();
- 
+
         public ReactivePropertySlim<double> CPURate { get; } = new ReactivePropertySlim<double>();
+        public ReactivePropertySlim<double> FPS { get; } = new ReactivePropertySlim<double>();
 
         private DispatcherTimer dispatcherTimer = new DispatcherTimer();
  
@@ -82,7 +83,7 @@ namespace Monitor.ViewModels
                     vc.Dispose();
                 }
                 Eizou.Value = resolution;
-                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(16.7);
+                dispatcherTimer.Interval = TimeSpan.FromTicks(1);
                 dispatcherTimer.Tick += DispatcherTimer_Tick;
                 Environment.SetEnvironmentVariable("OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS", "0");
                 vc = new VideoCapture(Eizou.Value.CameraNumber, VideoCaptureAPIs.MSMF);
@@ -209,8 +210,29 @@ namespace Monitor.ViewModels
             bufferedWaveProvider.AddSamples(e.Buffer, 0, e.BytesRecorded);
         }
 
+        private static int lastTick;
+        private static int lastFrameRate;
+        private static int frameRate;
+
+        public int CalculateFrameRate()
+        {
+
+            if (System.Environment.TickCount - lastTick >= 1000)
+            {
+                lastFrameRate = frameRate;
+                frameRate = 0;
+                lastTick = System.Environment.TickCount;
+            }
+            frameRate++;
+            return lastFrameRate;
+        }
+
         private void DispatcherTimer_Tick(object? sender, EventArgs e)
         {
+            if (Image.Value is not null)
+            {
+                Image.Value.Dispose();
+            }
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var mat = new Mat();
@@ -218,7 +240,7 @@ namespace Monitor.ViewModels
             vc.Retrieve(mat);
             Image.Value = mat;
             stopwatch.Stop();
-            Cv2.WaitKey((int)(17 - stopwatch.ElapsedMilliseconds));
+            FPS.Value = CalculateFrameRate();
         }
     }
 }

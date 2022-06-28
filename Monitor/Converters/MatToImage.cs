@@ -18,7 +18,7 @@ namespace Monitor.Converters
             var mat = value as Mat;
             if (mat is null)
                 return DependencyProperty.UnsetValue;
-            return mat.ToBitmapSource();
+            return mat.ToWriteableBitmap();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
