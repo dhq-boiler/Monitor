@@ -50,8 +50,6 @@ namespace libcamenmCore
                             AvailableResolutions.Clear();
                             max = 0;
                             bitCount = v.BmiHeader.BitCount;
-
-
                         }
                         AvailableResolutions.Add(new Resolution(vidDev, cameraNumber, v.BmiHeader.Width, v.BmiHeader.Height));
                         if (v.BmiHeader.Width > max || v.BmiHeader.Height > max)
