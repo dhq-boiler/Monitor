@@ -7,13 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="DirectShowLib-2005.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="DirectShowLib-2005.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <PackageReference Include="DirectShowLib.Standard" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
