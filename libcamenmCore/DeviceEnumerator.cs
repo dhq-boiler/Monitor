@@ -2,6 +2,7 @@ using DirectShowLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace libcamenmCore
@@ -10,7 +11,7 @@ namespace libcamenmCore
     {
         public static IEnumerable<DsDevice> EnumVideoInputDevice()
         {
-            return DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
+            return DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice).OrderBy(x => x.DevicePath);
         }
 
         public static List<Resolution> GetAllAvailableResolution(int cameraNumber, DsDevice vidDev)
@@ -58,7 +59,7 @@ namespace libcamenmCore
                     }
                     hr = mediaTypeEnum.Next(1, mediaTypes, fetched);
                 }
-                return AvailableResolutions;
+                return AvailableResolutions.OrderBy(x => x.Width).ThenBy(x => x.Height).ToList();
             }
 
             catch (Exception ex)
